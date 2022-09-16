@@ -13,6 +13,9 @@
     <a href="https://github.com/ianmclinden/himbsay/releases/latest" title="GitHub release">
         <img src="https://img.shields.io/github/release/ianmclinden/himbsay.svg">
     </a>
+    <a href="https://godoc.org/github.com/ianmclinden/himbsay" title="GoDoc">
+        <img src="https://godoc.org/github.com/ianmclinden/himbsay?status.svg">
+    </a>
     <a href="https://opensource.org/licenses/MIT" title="License: MIT">
         <img src="https://img.shields.io/badge/License-MIT-blue.svg">
     </a>
@@ -24,6 +27,16 @@ A talking isaak and a talking guner. Like an overly-specific [cowsay](https://gi
 
 
 ## Installation
+
+### Homebrew
+
+`isaaksay` and `gunersay` can be installed from the [homebrew](https://brew.sh/) package manager on macOS and linux
+
+```sh
+brew tap ianmclinden/homebrew-extras
+# Meta-package that contains both isaaksay and gunersay
+brew install himbsay
+```
 
 ### Linux
 ```sh
