@@ -59,7 +59,7 @@ func splitLines(message string, length int) ([]string, int) {
 }
 
 func boxMessage(message string, maxWidth int, minHeight int) []string {
-	lines, maxLen := splitLines(message, maxWidth-4) // len("| x |")==4
+	lines, maxLen := splitLines(message, maxWidth) // len("| x |")==4
 
 	if len(lines) == 0 || maxLen == 0 {
 		lines = append(lines, "")
@@ -101,7 +101,7 @@ func boxMessage(message string, maxWidth int, minHeight int) []string {
 	return box
 }
 
-func Say(writer io.Writer, message string, defaultMessage string, template string, padding int, formatLines int, termWidth int, escape bool) error {
+func Say(writer io.Writer, message string, defaultMessage string, template string, padding int, formatLines int, width int, escape bool) error {
 
 	info, err := os.Stdin.Stat()
 	if err != nil {
@@ -121,7 +121,7 @@ func Say(writer io.Writer, message string, defaultMessage string, template strin
 	if escape {
 		message = format(message, ExtendedFormatRules)
 	}
-	lines := boxMessage(message, (termWidth - padding), formatLines)
+	lines := boxMessage(message, width, formatLines)
 
 	var extraLines string
 	for i := len(lines); i > formatLines; i-- {

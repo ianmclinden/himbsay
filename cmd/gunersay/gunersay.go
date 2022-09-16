@@ -48,15 +48,21 @@ func gunersay(c *cli.Context) error {
 		message        = strings.Join(c.Args().Slice(), " ")
 		defaultMessage = common.GetRandomFrom(defaultMessages)
 		noWrap         = c.Bool("no-wrap")
-		termWidth      = c.Int("output-width")
+		width          = c.Int("output-width")
 		escape         = c.Bool("extended-formatting")
+		list           = c.Bool("list")
 	)
 
-	if noWrap {
-		termWidth = len(template) + len(message) + colPadding
+	if list {
+		_, err := fmt.Println("gunersay only supports one type of guner:\ndefault")
+		return err
 	}
 
-	return common.Say(os.Stdout, message, defaultMessage, template, colPadding, minTemplateLines, termWidth, escape)
+	if noWrap {
+		width = 2 * len(message)
+	}
+
+	return common.Say(os.Stdout, message, defaultMessage, template, colPadding, minTemplateLines, width, escape)
 }
 
 var (
@@ -72,7 +78,7 @@ func main() {
 		Version:              version,
 		Compiled:             time.Now(),
 		Usage:                "a speaking Güner",
-		UsageText:            "gunersay [-en] [-w width] [message]",
+		UsageText:            "gunersay [-en] [-wW width] [message]",
 		EnableBashCompletion: true,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
@@ -89,9 +95,23 @@ func main() {
 			},
 			&cli.IntFlag{
 				Name:    "output-width",
-				Aliases: []string{"width", "w"},
-				Usage:   "Set the output width (Useful for chaining commands)",
-				Value:   common.GetTermSize(),
+				Aliases: []string{"width", "W", "w"},
+				Usage:   "Set the output width of the speech baloon in columns (Useful for chaining commands)",
+				Value:   common.GetTermSize() - (colPadding + 4), // speech bubble padding
+			},
+			&cli.BoolFlag{
+				Name:    "list",
+				Aliases: []string{"l"},
+				Usage:   "(Compatabiliity) List supported guners",
+				Hidden:  true,
+				Value:   false,
+			},
+			&cli.StringFlag{
+				Name:    "isaakfile",
+				Aliases: []string{"f"},
+				Usage:   "(Compatabiliity) Specify isaakfile",
+				Hidden:  true,
+				Value:   "",
 			},
 		},
 		Action: gunersay,

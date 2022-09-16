@@ -50,7 +50,7 @@ func TestBoxMessage(t *testing.T) {
 			"( a nice message \x1b[0m)",
 			" ----------------",
 		}},
-		{"a nice message", 19, 5, []string{
+		{"a nice message", 14, 5, []string{
 			"",
 			"",
 			" ----------------",
@@ -71,7 +71,7 @@ func TestBoxMessage(t *testing.T) {
 			"\\ message          \x1b[0m/",
 			" ------------------",
 		}},
-		{"a nice long message that will surely be wrapped", 24, 1, []string{
+		{"a nice long message that will surely be wrapped", 21, 1, []string{
 			" ---------------------",
 			"/ a nice long message \x1b[0m\\",
 			"| that will surely be \x1b[0m|",
