@@ -48,9 +48,11 @@ func TestGetPipedInput(t *testing.T) {
 }
 
 func TestGetTermSize(t *testing.T) {
-	expectedSize := defaultTermSize
-	size := GetTermSize()
-	if size != expectedSize {
-		t.Errorf("Expected default terminal size %d, got %d", expectedSize, size)
+	width, height := GetTermSize()
+	if width != defaultTermWidth {
+		t.Errorf("Expected default terminal width %d, got %d", defaultTermWidth, width)
+	}
+	if height != defaultTermHeight {
+		t.Errorf("Expected default terminal height %d, got %d", defaultTermHeight, height)
 	}
 }

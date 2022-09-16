@@ -10,7 +10,10 @@ import (
 	"golang.org/x/term"
 )
 
-const defaultTermSize int = 80 // If stdin and stdout are both being used
+const (
+	defaultTermWidth  int = 80 // Ifstdout is being used
+	defaultTermHeight int = 80 // If stdout is being used
+)
 
 func GetRandomFrom[T any](collection []T) T {
 	rand.Seed(time.Now().UnixNano())
@@ -31,12 +34,18 @@ func getPipedInput(reader io.Reader) (string, error) {
 	return strings.Join(message, "\n"), nil
 }
 
-func GetTermSize() int {
-	termSize, _, _ := term.GetSize(1)
-	if termSize <= 0 {
-		termSize = defaultTermSize
+func GetTermSize() (int, int) {
+	width, height, err := term.GetSize(1)
+	if err != nil {
+		return defaultTermWidth, defaultTermHeight
 	}
-	return termSize
+	if width <= 0 {
+		width = defaultTermWidth
+	}
+	if height <= 0 {
+		height = defaultTermHeight
+	}
+	return width, height
 }
 
 func toInterface[T any](collection []T) []interface{} {

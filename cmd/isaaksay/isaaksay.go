@@ -12,6 +12,7 @@ import (
 
 const (
 	colPadding       int    = 41 // Left hand offset
+	rowPadding       int    = 12 // Bottom offset
 	minTemplateLines int    = 4  // Template has 4 lines of formatted text, the rest need to be above
 	template         string = "" +
 		"                \x1b[36mX0\x1b[34mOkxooodxkO\x1b[36mKX\x1b[0m           %v\n" +
@@ -47,6 +48,7 @@ func isaaksay(c *cli.Context) error {
 		defaultMessage = common.GetRandomFrom(defaultMessages)
 		noWrap         = c.Bool("no-wrap")
 		width          = c.Int("output-width")
+		height         = c.Int("output-height")
 		escape         = c.Bool("extended-formatting")
 		list           = c.Bool("list")
 	)
@@ -60,14 +62,16 @@ func isaaksay(c *cli.Context) error {
 		width = 2 * len(message)
 	}
 
-	return common.Say(os.Stdout, message, defaultMessage, template, colPadding, minTemplateLines, width, escape)
+	return common.Say(os.Stdout, message, defaultMessage, template, colPadding, minTemplateLines, width, height, escape)
 }
 
 var (
-	version string
+	version       string
+	width, height = common.GetTermSize()
 )
 
 func main() {
+
 	app := &cli.App{
 		Name: "isaaksay",
 		Authors: []*cli.Author{
@@ -95,7 +99,13 @@ func main() {
 				Name:    "output-width",
 				Aliases: []string{"width", "W", "w"},
 				Usage:   "Set the output width of the speech baloon in columns (Useful for chaining commands)",
-				Value:   common.GetTermSize() - (colPadding + 4), // speech bubble padding
+				Value:   width - (colPadding + 4), // speech bubble padding
+			},
+			&cli.IntFlag{
+				Name:    "output-height",
+				Aliases: []string{"height", "H"},
+				Usage:   "Set the output height of the speech baloon in rows (Useful for chaining commands)",
+				Value:   height - (rowPadding + 2), // speech bubble padding
 			},
 			&cli.BoolFlag{
 				Name:    "list",

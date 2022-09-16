@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func splitLines(message string, length int) ([]string, int) {
+func splitLines(message string, width int) ([]string, int) {
 	var lines []string
 	maxLength := 0
 	addFormatString := ""
@@ -21,7 +21,7 @@ func splitLines(message string, length int) ([]string, int) {
 			lastString := len(subline)
 
 			// Work from the back of the line, until the formatted string is just less than the allowed length
-			for formattedLength > length {
+			for formattedLength > width {
 				lastString = strings.LastIndex(subline, " ")
 				if lastString < 0 {
 					// Can't be split...
@@ -58,8 +58,8 @@ func splitLines(message string, length int) ([]string, int) {
 	return lines, maxLength
 }
 
-func boxMessage(message string, maxWidth int, minHeight int) []string {
-	lines, maxLen := splitLines(message, maxWidth) // len("| x |")==4
+func boxMessage(message string, maxWidth int, maxHeight int) []string {
+	lines, maxLen := splitLines(message, maxWidth)
 
 	if len(lines) == 0 || maxLen == 0 {
 		lines = append(lines, "")
@@ -73,15 +73,12 @@ func boxMessage(message string, maxWidth int, minHeight int) []string {
 		}
 	}
 
-	var box []string
-
-	// Pad to ensure formatting (+ top & bottom line)
-	if len(lines)+2 < minHeight {
-		for i := len(lines) + 2; i < minHeight; i++ {
-			box = append(box, "")
-		}
+	// Truncate lines to fit
+	if len(lines) > maxHeight {
+		lines = lines[len(lines)-maxHeight:]
 	}
 
+	var box []string
 	// build box
 	bar := " " + strings.Repeat("-", maxLen+2)
 
@@ -101,7 +98,7 @@ func boxMessage(message string, maxWidth int, minHeight int) []string {
 	return box
 }
 
-func Say(writer io.Writer, message string, defaultMessage string, template string, padding int, formatLines int, width int, escape bool) error {
+func Say(writer io.Writer, message string, defaultMessage string, template string, padding int, formatLines int, width int, height int, escape bool) error {
 
 	info, err := os.Stdin.Stat()
 	if err != nil {
@@ -121,8 +118,15 @@ func Say(writer io.Writer, message string, defaultMessage string, template strin
 	if escape {
 		message = format(message, ExtendedFormatRules)
 	}
-	lines := boxMessage(message, width, formatLines)
 
+	lines := boxMessage(message, width, height)
+
+	// Pad to the box ensure we have enougn to fill the template (+ top & bottom line)
+	for i := len(lines); i < formatLines; i++ {
+		lines = append([]string{""}, lines...)
+	}
+
+	// Pad the tempate to ensure we have enough template to print the lines
 	var extraLines string
 	for i := len(lines); i > formatLines; i-- {
 		extraLines += strings.Repeat(" ", padding) + "%v\n"

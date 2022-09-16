@@ -37,50 +37,51 @@ func TestBoxMessage(t *testing.T) {
 	var tests = []struct {
 		Input     string
 		MaxWidth  int
-		MinHeight int
+		MaxHeight int
 		Output    []string
 	}{
-		{"", 40, 3, []string{
+		{"", 40, 1, []string{
 			" --",
 			"(  \x1b[0m)",
 			" --",
 		}},
-		{"a nice message", 40, 3, []string{
+		{"a nice message", 40, 1, []string{
 			" ----------------",
 			"( a nice message \x1b[0m)",
 			" ----------------",
 		}},
-		{"a nice message", 14, 5, []string{
-			"",
-			"",
+		{"a nice message", 14, 1, []string{
 			" ----------------",
 			"( a nice message \x1b[0m)",
 			" ----------------",
 		}},
-		{"\033[0;31ma\033[m \033[0;32mnice\033[m \033[0;34mmessage\033[m", 40, 5, []string{
-			"",
-			"",
+		{"\033[0;31ma\033[m \033[0;32mnice\033[m \033[0;34mmessage\033[m", 40, 1, []string{
 			" ----------------",
 			"( \033[0;31ma\033[m \033[0;32mnice\033[m \033[0;34mmessage\033[m \x1b[0m)",
 			" ----------------",
 		}},
-		{"a nice truncated message", 21, 5, []string{
-			"",
+		{"a nice truncated message", 21, 2, []string{
 			" ------------------",
 			"/ a nice truncated \x1b[0m\\",
 			"\\ message          \x1b[0m/",
 			" ------------------",
 		}},
-		{"a nice long message that will surely be wrapped", 21, 1, []string{
+		{"a nice long message that will surely be wrapped", 21, 3, []string{
 			" ---------------------",
 			"/ a nice long message \x1b[0m\\",
 			"| that will surely be \x1b[0m|",
 			"\\ wrapped             \x1b[0m/",
 			" ---------------------",
 		}},
+		{"a nice long message that will surely be truncated", 21, 2, []string{
+			" ---------------------",
+			"/ that will surely be \x1b[0m\\",
+			"\\ truncated           \x1b[0m/",
+			" ---------------------",
+		}},
 	}
 	for _, test := range tests {
-		output := boxMessage(test.Input, test.MaxWidth, test.MinHeight)
+		output := boxMessage(test.Input, test.MaxWidth, test.MaxHeight)
 		for i, line := range output {
 			if test.Output[i] != line {
 				t.Errorf("Expected line [%s], got [%s]", test.Output[i], line)
